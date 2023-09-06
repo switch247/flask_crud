@@ -1,0 +1,292 @@
+<head>
+
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+
+{%extends 'base.html'%}
+
+{%block title%}
+
+{%endblock%}
+
+
+
+
+
+{%block body%}
+
+
+{%include 'header.html'%}
+
+
+
+
+<div class="container">
+    <div class="row ">
+        <div class="col md-12">
+            <div class="jumbotron p-3">
+                <h2> Manage <b>Employees</b>
+                    <!-- <button class="btn  btn-danger">edit</button> -->
+                    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target='#mymodal'>
+                        Add New Employees</button>
+                </h2>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="messages alert alert-success alert-dismissible fade show" role="alert">
+                    <ul>
+                        {% for message in messages %}
+                        <li style=" list-style: none;" "> {{ message[0] }}</li>
+                        {% endfor %}
+                    </ul>
+                    <button type=" button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                {% endwith %}
+
+            </div>
+
+            <table class=" table table-hover table-dark p-4">
+                <tr>
+                    <th>ID </th>
+                    <th>Name </th>
+                    <th>Email </th>
+                    <th>Phone </th>
+                    <th>Action </th>
+                </tr>
+
+                {% for item in data %}
+                <tr>
+                    <td>{{ item.id}}</td>
+                    <td>{{ item.name}}</td>
+                    <td>{{ item.email}}</td>
+                    <td>{{ item.phone_number}}</td>
+                    <td>
+                        <a href="" class='btn btn-warning btn-xs' data-bs-target='#modaledit{{item.id}}'
+                            data-bs-toggle="modal">edit</a>
+                            <form action="{{url_for('delete',id=item.id)}}" method="POST">
+                        <button type="submit"  onclick="return confirm('Are you sure You want to delete')" class='btn btn-danger btn-xs'>delete</button>
+                        <!-- -->
+                        </form>
+                    </td>
+                </tr>
+
+                <div id="modaledit{{item.id}}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h4 class="modal-title">edit </h4>
+                                <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                            </div>
+
+                            <div class="modal-body">
+
+                                <!-- <p>Modal body text goes here.</p> -->
+
+                                <form class="updateForm row g-3 needs-validation" novalidate id="myForm" method="POST", action="{{url_for('update',id=item.id)}}">
+                                    <!-- <input type="hidden" name="_method" value="PUT"> -->
+                                    <div class="col-md-4">
+                                        <label for="validationCustom01" class="form-label">Name</label>
+                                        <input type="hidden" name="id" value="{{item.id}}" />
+                                        <input type="text" name="name" class="form-control" id="name validationCustom01"
+                                            value="{{item.name}}" required>
+
+                                        <div class="valid-feedback">
+                                            Looks good!
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="validationCustom02" class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-control"
+                                            id="email validationCustom02" value="{{item.email}}" required>
+                                        <div class="valid-feedback">
+                                            Looks good!
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="validationCustom02" class="form-label">phone</label>
+                                        <input type="text" name="phone_number" class="form-control"
+                                            id="phone validationCustom02" value="{{item.phone_number}}" required>
+                                        <div class="valid-feedback">
+                                            Looks good!
+                                        </div>
+                                    </div>
+
+
+
+
+
+                                    <div class="col-12">
+                                        <button class="btn btn-primary" type="submit" >Edit</button>
+<!--  sendPutRequest(item.id,item.name,item.phone_number,item.email) -->
+                                    </div>
+                                </form>
+                                <script>
+                                    (() => {
+                                        'use strict'
+
+                                        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                                        const forms = document.querySelectorAll('.needs-validation')
+
+                                        // Loop over them and prevent submission
+                                        Array.from(forms).forEach(form => {
+                                            form.addEventListener('submit', event => {
+                                                if (!form.checkValidity()) {
+                                                    event.preventDefault()
+                                                    event.stopPropagation()
+                                                }
+
+                                                form.classList.add('was-validated')
+                                            }, false)
+                                        })
+                                    })()
+                                </script>
+
+                            </div>
+
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+                {% endfor %}
+
+
+
+
+            </table>
+
+        </div>
+    </div>
+    <!-- add employee -->
+    <div id="mymodal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Employee</h4>
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- <p>Modal body text goes here.</p> -->
+
+                    <form class="row g-3 needs-validation" novalidate action="{{url_for('create')}}" method="POST">
+                        <div class="col-md-4">
+                            <label for="validationCustom01" class="form-label">Name</label>
+                            <input type="text" class="form-control" name='name' id="validationCustom01" value="Mark"
+                                required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationCustom02" class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" id="validationCustom02"
+                                value="test@example.com" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="validationCustom02" class="form-label">phone</label>
+                            <input type="text" name="phone_number" class="form-control" id="validationCustom02"
+                                value="902322534" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+
+
+
+
+
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="submit">Add Employees</button>
+                        </div>
+                    </form>
+                    <script>
+                            (() => {
+                                'use strict'
+
+                                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                                const forms = document.querySelectorAll('.needs-validation')
+
+                                // Loop over them and prevent submission
+                                Array.from(forms).forEach(form => {
+                                    form.addEventListener('submit', event => {
+                                        if (!form.checkValidity()) {
+                                            event.preventDefault()
+                                            event.stopPropagation()
+                                        }
+
+                                        form.classList.add('was-validated')
+                                    }, false)
+                                })
+                            })()
+                    </script>
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+
+{%endblock%}
+
+
+<script>
+    function sendPutRequest(id, name, phone_number, email) {
+        console.log("first")
+        const url = '/employees/{{id}}';
+        const data = {
+            name: '{{name}}',
+            id: '{{id}}',
+            phone_number: '{{phone_number}}',
+            email: '{{email}}',
+        };
+
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+    }
+
+    <script />
